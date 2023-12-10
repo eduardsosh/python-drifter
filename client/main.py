@@ -1,5 +1,13 @@
 import pygame
 import sys
+
+import os
+
+# Get the correct asset path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+assets_dir = os.path.join(script_dir, "..", "assets")
+
+
 def background(color, image, position):
     canvas.fill(color)
     canvas.blit(image, dest = position)
@@ -24,7 +32,7 @@ position = (x, y)
 canvas = pygame.display.set_mode((500, 500))
 
 pygame.display.set_caption("My Board") 
-image = pygame.image.load("..\\assets\\track.png")
+image = pygame.image.load(os.path.join(assets_dir, "track.png"))
 
 exit = False
   
