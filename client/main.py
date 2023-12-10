@@ -24,7 +24,7 @@ position = (x, y)
 canvas = pygame.display.set_mode((500, 500))
 
 pygame.display.set_caption("My Board") 
-image = pygame.image.load("bilde.png")
+image = pygame.image.load("python-drifter\\assets\\track.png")
 
 exit = False
   
