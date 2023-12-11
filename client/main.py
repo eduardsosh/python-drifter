@@ -1,5 +1,6 @@
 import pygame
 import os
+import math
 
 class Game:
     def __init__(self):
@@ -52,18 +53,24 @@ class Game:
         surf.blit(rotated_image, rotated_image_rect)
     
 
-
     def move(self):
+        pidiv180 = math.pi/180
         keys = pygame.key.get_pressed()
         if keys[pygame.K_s]:
-            self.y -= 5
+            #self.y -= 5
+            pass
         if keys[pygame.K_w]:
-            self.y += 5
+            self.velocity_x += math.cos(self.orientation*pidiv180)
+            self.velocity_y += math.sin(self.orientation*pidiv180)
         if keys[pygame.K_a]:
-            self.orientation += 1
+            self.angular_velocity += 0.1
         if keys[pygame.K_d]:
-            self.orientation -= 1
-        self.position = (self.x, self.y)
+            self.angular_velocity -= 0.1
+        
+        self.orientation += self.angular_velocity
+        self.position = (self.x + self.velocity_x, self.y + self.velocity_y)
+        
+        print(self.velocity_x, self.velocity_y)
 
     def run(self):
         exit = False
