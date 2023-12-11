@@ -68,7 +68,9 @@ class Game:
             self.angular_velocity -= 0.1
         
         self.orientation += self.angular_velocity
-        self.position = (self.x + self.velocity_x, self.y + self.velocity_y)
+        self.x = self.x + self.velocity_x
+        self.y = self.y + self.velocity_y
+        self.position = (self.x, self.y)
         
         print(self.velocity_x, self.velocity_y)
 
