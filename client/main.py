@@ -54,20 +54,37 @@ class Game:
     
 
     def move(self):
+        #Car specs
+        POWER = 0.1
+        STEERING = 0.1
+        TOP_SPEED = 18
+        DRAG = 0.02
+        STEERING_DRAG = 0.05
+        
         pidiv180 = math.pi/180
         keys = pygame.key.get_pressed()
+        
+        speed = math.sqrt(self.velocity_x**2 + self.velocity_y**2)
+        
         if keys[pygame.K_s]:
             #self.y -= 5
             pass
-        if keys[pygame.K_w]:
-            self.velocity_x += math.sin(self.orientation*pidiv180)
-            self.velocity_y += math.cos(self.orientation*pidiv180)
+        if keys[pygame.K_w] and speed < TOP_SPEED:
+            self.velocity_x += math.sin(self.orientation*pidiv180)*POWER
+            self.velocity_y += math.cos(self.orientation*pidiv180)*POWER
         if keys[pygame.K_a]:
-            self.angular_velocity += 0.1
+            self.angular_velocity += STEERING
         if keys[pygame.K_d]:
-            self.angular_velocity -= 0.1
+            self.angular_velocity -= STEERING
+        
+        #Car has natural drag
+        self.velocity_x *= (1-DRAG)
+        self.velocity_y *= (1-DRAG)
+        
+        self.angular_velocity *= (1-STEERING_DRAG)
         
         self.orientation += self.angular_velocity
+        
         self.x = self.x + self.velocity_x
         self.y = self.y + self.velocity_y
         self.position = (self.x, self.y)
