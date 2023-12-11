@@ -60,8 +60,8 @@ class Game:
             #self.y -= 5
             pass
         if keys[pygame.K_w]:
-            self.velocity_x += math.cos(self.orientation*pidiv180)
-            self.velocity_y += math.sin(self.orientation*pidiv180)
+            self.velocity_x += math.sin(self.orientation*pidiv180)
+            self.velocity_y += math.cos(self.orientation*pidiv180)
         if keys[pygame.K_a]:
             self.angular_velocity += 0.1
         if keys[pygame.K_d]:
