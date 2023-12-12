@@ -19,8 +19,8 @@ class Game:
         self.car = pygame.image.load(os.path.join(assets_dir, "car.png")).convert_alpha()
         
         #Create a collision mask for the track
-        self.track_mask = pygame.mask.from_surface(self.track, 127)
-        self.track_mask = self.invert_mask(self.track_mask)
+        self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255))
+        #self.track_mask = self.invert_mask(self.track_mask)
         self.car_mask = pygame.mask.from_surface(self.car, 127)
 
 
@@ -132,6 +132,12 @@ class Game:
             self.check_collision()
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
             
+            #Draw track mask
+            for x in range(self.track_mask.get_size()[0]):
+                for y in range(self.track_mask.get_size()[1]):
+                    if self.track_mask.get_at((x, y)):
+                        self.canvas.set_at((x, y), (255, 0, 0))
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit = True
