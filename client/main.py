@@ -18,6 +18,8 @@ class Game:
         self.track = pygame.image.load(os.path.join(assets_dir, "track.png"))
         self.car = pygame.image.load(os.path.join(assets_dir, "car.png")).convert_alpha()
         
+        self.track_mask = pygame.mask.from_surface(self.track)
+        
         
         self.car = pygame.transform.scale(self.car, (40, 80))
 
@@ -55,9 +57,9 @@ class Game:
 
     def move(self):
         #Car specs
-        POWER = 0.1
-        STEERING = 0.1
-        TOP_SPEED = 18
+        POWER = 0.3
+        STEERING = 0.3
+        TOP_SPEED = 30
         DRAG = 0.02
         STEERING_DRAG = 0.05
         
@@ -89,8 +91,6 @@ class Game:
         self.y = self.y + self.velocity_y
         self.position = (self.x, self.y)
         
-        print(self.velocity_x, self.velocity_y)
-
     def run(self):
         exit = False
         while not exit:
@@ -104,7 +104,7 @@ class Game:
                     exit = True
 
             pygame.display.update()
-            pygame.time.Clock().tick(60)
+            pygame.time.Clock().tick(30)
 
 
 if __name__ == "__main__":
