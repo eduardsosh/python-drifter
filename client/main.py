@@ -15,14 +15,18 @@ class Game:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         assets_dir = os.path.join(script_dir, "..", "assets")
 
-        self.track = pygame.image.load(os.path.join(assets_dir, "track.png"))
+        self.track = pygame.image.load(os.path.join(assets_dir, "track.png")).convert_alpha()
         self.car = pygame.image.load(os.path.join(assets_dir, "car.png")).convert_alpha()
         
         #Create a collision mask for the track
-        self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255))
-        #self.track_mask = self.invert_mask(self.track_mask)
+        self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255), (1, 1, 1, 255))
         self.car_mask = pygame.mask.from_surface(self.car, 127)
+        
 
+        #Create a surface from track mask
+        self.mask_image = self.track_mask.to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
+        self.car_mask_image = self.car_mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
+        
 
         self.car = pygame.transform.scale(self.car, (40, 80))
 
@@ -95,23 +99,10 @@ class Game:
         self.position = (self.x, self.y)
 
     def check_collision(self):
-        # Rotate the car image and create a mask for the rotated image
-        rotated_car = pygame.transform.rotate(self.car, self.orientation)
-        rotated_car_mask = pygame.mask.from_surface(rotated_car)
-
-        # The car's fixed screen position (center of the screen)
-        car_screen_pos = (self.screen_width / 2, self.screen_height / 2)
-
-        # Calculate the track's top-left position relative to the screen center
-        track_pos_relative_to_screen_center = (
-            car_screen_pos[0] - self.position[0],
-            car_screen_pos[1] - self.position[1]
-        )
-
-        # Check for collision
-        if self.track_mask.overlap(rotated_car_mask, track_pos_relative_to_screen_center):
-            print("Collision detected")
+        if self.track_mask.overlap(self.car_mask, (int(self.x), int(self.y))):
+            print("Collision")
             return True
+        
         
     def invert_mask(self , original_mask):
         """Inverts a given Pygame mask."""
@@ -132,11 +123,9 @@ class Game:
             self.check_collision()
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
             
-            #Draw track mask
-            for x in range(self.track_mask.get_size()[0]):
-                for y in range(self.track_mask.get_size()[1]):
-                    if self.track_mask.get_at((x, y)):
-                        self.canvas.set_at((x, y), (255, 0, 0))
+            self.canvas.blit(self.mask_image, dest=self.position)
+            self.canvas.blit(self.car_mask_image, dest=self.position)
+            
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
