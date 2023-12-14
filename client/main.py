@@ -20,13 +20,10 @@ class Game:
         
         #Create a collision mask for the track
         self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255), (1, 1, 1, 255))
-        self.car_mask = pygame.mask.from_surface(self.car, 127)
         
 
         #Create a surface from track mask
         self.mask_image = self.track_mask.to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
-        self.car_mask_image = self.car_mask.to_surface(setcolor=(0, 255, 0, 100), unsetcolor=(0, 0, 0, 0))
-        
 
         self.car = pygame.transform.scale(self.car, (40, 80))
 
@@ -59,6 +56,8 @@ class Game:
         rotated_image = pygame.transform.rotate(image, angle)
         rotated_image_rect = rotated_image.get_rect(center = rotated_image_center)
 
+        #draw the rect
+        pygame.draw.rect(surf, (255, 0, 0), (*rotated_image_rect.topleft, *rotated_image_rect.size),2)
         surf.blit(rotated_image, rotated_image_rect)
     
 
@@ -98,33 +97,34 @@ class Game:
         self.y = self.y + self.velocity_y
         self.position = (self.x, self.y)
 
-    def check_collision(self):
-        if self.track_mask.overlap(self.car_mask, (int(self.x), int(self.y))):
+    #Function that creates a mask from the car surface.
+    #The mask is used to check for collision with the track
+    def create_car_mask(self):
+        car_mask = pygame.mask.from_surface(self.car)
+        return car_mask
+    
+    def detect_collision(self):
+        car_mask = self.create_car_mask()
+        #Get the offset between the car and the track
+        offset = (-self.x + self.screen_width/2, -self.y + self.screen_height/2)
+        #Check if the car is colliding with the track
+        overlap = self.track_mask.overlap(car_mask, offset)
+        #If there is an overlap, return True
+        if overlap:
             print("Collision")
             return True
-        
-        
-    def invert_mask(self , original_mask):
-        """Inverts a given Pygame mask."""
-        inverted_mask = pygame.mask.Mask(original_mask.get_size())
-        for x in range(original_mask.get_size()[0]):
-            for y in range(original_mask.get_size()[1]):
-                if not original_mask.get_at((x, y)):
-                    inverted_mask.set_at((x, y), 1)
-        return inverted_mask
+        else:
+            return False
 
-
-        
     def run(self):
         exit = False
         while not exit:
             self.background()
             self.move()
-            self.check_collision()
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
+            self.detect_collision()
             
             self.canvas.blit(self.mask_image, dest=self.position)
-            self.canvas.blit(self.car_mask_image, dest=self.position)
             
 
             for event in pygame.event.get():
