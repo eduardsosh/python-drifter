@@ -1,6 +1,7 @@
 import pygame
 import os
 import math
+import sys
 
 class Game:
     def __init__(self):
@@ -20,7 +21,8 @@ class Game:
         
         #Create a collision mask for the track
         self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255), (1, 1, 1, 255))
-        
+        #Variable to show collisions
+        self.collided = False
 
         #Create a surface from track mask
         self.mask_image = self.track_mask.to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
@@ -112,8 +114,14 @@ class Game:
         #If there is an overlap, return True
         if overlap:
             print("Collision")
+            sys.stdout.write("\033[F")
+            self.collided = True
             return True
         else:
+            print("Not collision")
+            sys.stdout.write("\033[F")
+            self.collided = False
+
             return False
 
     def run(self):
