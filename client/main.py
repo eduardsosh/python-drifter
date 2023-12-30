@@ -106,9 +106,11 @@ class Game:
         return car_mask
     
     def detect_collision(self):
+        offset_x = 0
+        offset_y = -40
         car_mask = self.create_car_mask()
         #Get the offset between the car and the track
-        offset = (-self.x + self.screen_width/2, -self.y + self.screen_height/2)
+        offset = (-self.x + self.screen_width/2 + offset_x, -self.y + self.screen_height/2 + offset_y)
         #Check if the car is colliding with the track
         overlap = self.track_mask.overlap(car_mask, offset)
         #If there is an overlap, return True
