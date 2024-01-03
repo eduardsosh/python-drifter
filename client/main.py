@@ -23,6 +23,10 @@ class Game:
         self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255), (1, 1, 1, 255))
         #Variable to show collisions
         self.collided = False
+        
+        self.ticks = 0
+
+        self.last_col = 0
 
         #Create a surface from track mask
         self.mask_image = self.track_mask.to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
@@ -118,6 +122,9 @@ class Game:
             print("Collision")
             sys.stdout.write("\033[F")
             self.collided = True
+            if self.ticks - self.last_col > 10:
+                self.bounce()
+                self.last_col = self.ticks
             return True
         else:
             print("Not collision")
@@ -125,10 +132,17 @@ class Game:
             self.collided = False
 
             return False
+    
+    def bounce(self):
+
+        self.velocity_x = self.velocity_x * -1
+        self.velocity_y = self.velocity_y * -1
+
 
     def run(self):
         exit = False
         while not exit:
+            self.ticks += 1
             self.background()
             self.move()
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
