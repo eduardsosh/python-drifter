@@ -16,7 +16,7 @@ class Game:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         assets_dir = os.path.join(script_dir, "..", "assets")
 
-        self.track = pygame.image.load(os.path.join(assets_dir, "track.png")).convert_alpha()
+        self.track = pygame.image.load(os.path.join(assets_dir, "track2.png")).convert_alpha()
         self.car = pygame.image.load(os.path.join(assets_dir, "car.png")).convert_alpha()
         self.overlapped_mask = None 
         
