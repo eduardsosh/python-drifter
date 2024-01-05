@@ -81,7 +81,7 @@ class Game:
         """
         #Car specs
         POWER = 0.3
-        STEERING = 0.3
+        STEERING = 1.05
         TOP_SPEED = 30
         DRAG = 0.02
         STEERING_DRAG = 0.05
@@ -99,9 +99,9 @@ class Game:
             self.velocity_x += math.sin(self.orientation*pidiv180)*POWER
             self.velocity_y += math.cos(self.orientation*pidiv180)*POWER
         if keys[pygame.K_a]:
-            self.angular_velocity += min((speed/TOP_SPEED)*STEERING*3.5, 1)
+            self.angular_velocity += min((speed/TOP_SPEED)*STEERING, 1)
         if keys[pygame.K_d]:
-            self.angular_velocity -= min((speed/TOP_SPEED)*STEERING*3.5, 1)
+            self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
         
         #Car has natural drag
         self.velocity_x *= (1-DRAG)
