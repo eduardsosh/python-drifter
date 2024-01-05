@@ -4,7 +4,7 @@ import json
 
 # Server IP and Port
 SERVER_IP = '45.93.138.56'
-SERVER_PORT = 12345
+SERVER_PORT = 55000
 
 # Store car coordinates (player_id: coordinates)
 car_coordinates = {}

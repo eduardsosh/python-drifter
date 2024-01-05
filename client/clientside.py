@@ -5,7 +5,7 @@ import time
 
 # Server IP and Port
 SERVER_IP = '45.93.138.56'
-SERVER_PORT = 12345
+SERVER_PORT = 55000
 
 # Client's player ID and initial coordinates
 player_id = "player1"
