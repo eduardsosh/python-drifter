@@ -3,7 +3,7 @@ import threading
 import json
 
 # Server IP and Port
-SERVER_IP = '127.0.0.1'
+SERVER_IP = 'infoauto.lv'
 SERVER_PORT = 12345
 
 # Store car coordinates (player_id: coordinates)
