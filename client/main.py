@@ -48,6 +48,10 @@ class Game:
         
         self.dx = 0
         self.dy = 0
+        
+        #Simplified mask for the car
+        self.simplemask = pygame.mask.Mask((40, 40))
+        self.simplemask.fill()
 
     def background(self):
         self.canvas.fill(self.color)
@@ -110,16 +114,11 @@ class Game:
         self.y = self.y + self.velocity_y
         self.position = (self.x, self.y)
 
-    #Function that creates a mask from the car surface.
-    #The mask is used to check for collision with the track
-    def create_car_mask(self):
-        car_mask = pygame.mask.from_surface(self.car)
-        return car_mask
-    
+
     def detect_collision(self):
         OFFSET_X = -20
-        OFFSET_Y = -40
-        car_mask = self.create_car_mask()
+        OFFSET_Y = -20
+        car_mask = self.simplemask
         #Get the offset between the car and the track
         offset = (-self.x + self.screen_width/2 + OFFSET_X, -self.y + self.screen_height/2 + OFFSET_Y)
         #Check if the car is colliding with the track
@@ -162,8 +161,8 @@ class Game:
 
         dot = self.dx * self.velocity_x + self.dy * self.velocity_y
 
-        self.velocity_x = 2 * self.dx * dot - self.velocity_x
-        self.velocity_y = 2 * self.dy * dot - self.velocity_y
+        self.velocity_x = 1.5 * self.dx * dot - self.velocity_x
+        self.velocity_y = 1.5 * self.dy * dot - self.velocity_y
 
 
     def run(self):
