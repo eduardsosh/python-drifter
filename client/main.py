@@ -6,8 +6,9 @@ import sys
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen_width = 1000
-        self.screen_height = 600
+        screen_sizes = pygame.display.get_desktop_sizes()
+        self.screen_width = screen_sizes[0][0]-100
+        self.screen_height = screen_sizes[0][1]-100
         self.canvas = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.SRCALPHA)
         pygame.display.set_caption("My Board")
 
