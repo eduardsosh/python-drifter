@@ -4,7 +4,7 @@ import threading
 import time
 
 # Server IP and Port
-SERVER_IP = 'infoauto.lv'
+SERVER_IP = '45.93.138.56'
 SERVER_PORT = 12345
 
 # Client's player ID and initial coordinates
