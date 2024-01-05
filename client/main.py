@@ -88,15 +88,16 @@ class Game:
         speed = math.sqrt(self.velocity_x**2 + self.velocity_y**2)
         
         if keys[pygame.K_s]:
-            #self.y -= 5
+            self.velocity_x += math.sin(self.orientation*pidiv180)*POWER*-1
+            self.velocity_y += math.cos(self.orientation*pidiv180)*POWER*-1
             pass
         if keys[pygame.K_w] and speed < TOP_SPEED:
             self.velocity_x += math.sin(self.orientation*pidiv180)*POWER
             self.velocity_y += math.cos(self.orientation*pidiv180)*POWER
         if keys[pygame.K_a]:
-            self.angular_velocity += STEERING
+            self.angular_velocity += min((speed/TOP_SPEED)*STEERING*3.5, 1)
         if keys[pygame.K_d]:
-            self.angular_velocity -= STEERING
+            self.angular_velocity -= min((speed/TOP_SPEED)*STEERING*3.5, 1)
         
         #Car has natural drag
         self.velocity_x *= (1-DRAG)
