@@ -18,6 +18,7 @@ class Game:
 
         self.track = pygame.image.load(os.path.join(assets_dir, "track.png")).convert_alpha()
         self.car = pygame.image.load(os.path.join(assets_dir, "car.png")).convert_alpha()
+        self.overlapped_mask = None 
         
         #Create a collision mask for the track
         self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255), (1, 1, 1, 255))
@@ -35,7 +36,7 @@ class Game:
 
         self.color = (255, 255, 255)
         self.x = 0
-        self.y = 0
+        self.y = -500
         self.position = (self.x, self.y)
         
         self.velocity_x = 0
@@ -44,6 +45,9 @@ class Game:
         #orientation in degrees 0-360
         self.orientation = 0
         self.angular_velocity = 0
+        
+        self.dx = 0
+        self.dy = 0
 
     def background(self):
         self.canvas.fill(self.color)
@@ -68,6 +72,9 @@ class Game:
     
 
     def move(self):
+        """
+        Te tiek darita masinas kustibas fizika
+        """
         #Car specs
         POWER = 0.3
         STEERING = 0.3
@@ -110,36 +117,60 @@ class Game:
         return car_mask
     
     def detect_collision(self):
-        offset_x = 0
-        offset_y = -40
+        OFFSET_X = -20
+        OFFSET_Y = -40
         car_mask = self.create_car_mask()
         #Get the offset between the car and the track
-        offset = (-self.x + self.screen_width/2 + offset_x, -self.y + self.screen_height/2 + offset_y)
+        offset = (-self.x + self.screen_width/2 + OFFSET_X, -self.y + self.screen_height/2 + OFFSET_Y)
         #Check if the car is colliding with the track
         overlap = self.track_mask.overlap(car_mask, offset)
+        overlap_area = self.track_mask.overlap_area(car_mask, offset)
+        
+        
         #If there is an overlap, return True
         if overlap:
+            # Kkada formula lai dabutu sadursmes virzienu
+            self.dx = self.track_mask.overlap_area(car_mask, (offset[0] + 1, offset[1])) - self.track_mask.overlap_area(car_mask, (offset[0] - 1, offset[1]))
+            self.dy = self.track_mask.overlap_area(car_mask, (offset[0], offset[1] + 1)) - self.track_mask.overlap_area(car_mask, (offset[0], offset[1] - 1))
             print("Collision")
-            sys.stdout.write("\033[F")
+            print(self.dx, self.dy)
+            print(math.degrees(math.atan2(self.dx, self.dy)))
             self.collided = True
             if self.ticks - self.last_col > 10:
                 self.bounce()
                 self.last_col = self.ticks
             return True
         else:
-            print("Not collision")
-            sys.stdout.write("\033[F")
             self.collided = False
 
             return False
     
     def bounce(self):
+        """
+        dx un dy ir vektors uz sadursmes punktu
+        velocity_x un velocity_y ir musu vektors
+        Jaunais velocity tiek aprekinats padarot sadursmes vektoru perpendikularu 
+        (varam iedomaties ka tas tiek pagriezts lai attelotu sienu)
+        un atspogulojot velocity vektoru pret to
+        
+        """
+        length = math.sqrt(self.dx**2 + self.dy**2)
+        self.dx /= length
+        self.dy /= length
 
-        self.velocity_x = self.velocity_x * -1
-        self.velocity_y = self.velocity_y * -1
+        self.dx, self.dy = -self.dy, self.dx
+
+        dot = self.dx * self.velocity_x + self.dy * self.velocity_y
+
+        self.velocity_x = 2 * self.dx * dot - self.velocity_x
+        self.velocity_y = 2 * self.dy * dot - self.velocity_y
 
 
     def run(self):
+        """
+        Ta teikt main speles izpildes funkcija
+        """
+        
         exit = False
         while not exit:
             self.ticks += 1
@@ -148,7 +179,7 @@ class Game:
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
             self.detect_collision()
             
-            self.canvas.blit(self.mask_image, dest=self.position)
+            #self.canvas.blit(self.mask_image, dest=self.position)
             
 
             for event in pygame.event.get():
