@@ -53,6 +53,24 @@ class Game:
         self.simplemask = pygame.mask.Mask((40, 40))
         self.simplemask.fill()
 
+        #countdown second count
+        self.countdown_seconds = 3
+    def show_countdown(self):
+        font = pygame.font.Font(None, 36)
+        countdown_surface = pygame.Surface((self.screen_width, self.screen_height), pygame.SRCALPHA)
+        for seconds in range(self.countdown_seconds, 0, -1):
+            countdown_surface.fill((0, 0, 0, 0))  # Clear the surface
+            text = font.render(str(seconds), True, (255, 255, 255))
+            text_rect = text.get_rect(center=(self.screen_width // 2, self.screen_height // 2))
+            countdown_surface.blit(text, text_rect)
+            self.canvas.fill((255, 255, 255))  # Clear the canvas
+            self.canvas.blit(self.track, dest=self.position)  # Draw game elements
+            self.canvas.blit(self.car, (self.screen_width / 2 - 20, self.screen_height / 2 - 40))
+            self.canvas.blit(countdown_surface, (0, 0))  # Overlay countdown surface
+            pygame.display.flip()
+            pygame.time.delay(1000)  # Delay for 1 second
+
+
     def background(self):
         self.canvas.fill(self.color)
         self.canvas.blit(self.track, dest=self.position)
@@ -170,7 +188,8 @@ class Game:
         """
         Ta teikt main speles izpildes funkcija
         """
-        
+        self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
+        self.show_countdown()
         exit = False
         while not exit:
             self.ticks += 1
