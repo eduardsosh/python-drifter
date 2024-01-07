@@ -9,6 +9,8 @@ class Game:
         screen_sizes = pygame.display.get_desktop_sizes()
         self.screen_width = screen_sizes[0][0]-100
         self.screen_height = screen_sizes[0][1]-100
+    
+        
         self.canvas = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.SRCALPHA)
         pygame.display.set_caption("My Board")
 
@@ -36,15 +38,19 @@ class Game:
         self.car = pygame.transform.scale(self.car, (40, 80))
 
         self.color = (255, 255, 255)
-        self.x = 0
-        self.y = -500
+        
+        # Auto pozicija izmantojot formulu tiek atrasta pie starta linijas
+        # Mainoties ekrana izmeram mainas auto sakotneja vieta
+        
+        self.x = self.screen_width/2 - 2900
+        self.y = self.screen_height/2 - 1100
         self.position = (self.x, self.y)
         
         self.velocity_x = 0
         self.velocity_y = 0
         
         #orientation in degrees 0-360
-        self.orientation = 0
+        self.orientation = 270
         self.angular_velocity = 0
         
         self.dx = 0
@@ -156,6 +162,8 @@ class Game:
         
         """
         length = math.sqrt(self.dx**2 + self.dy**2)
+        if length == 0:
+            return
         self.dx /= length
         self.dy /= length
 
@@ -188,7 +196,7 @@ class Game:
                     exit = True
 
             pygame.display.update()
-            pygame.time.Clock().tick(30)
+            pygame.time.Clock().tick(45)
 
 
 if __name__ == "__main__":
