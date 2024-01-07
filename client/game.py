@@ -247,5 +247,5 @@ class Game:
 
 if __name__ == "__main__":
     # Padot argumenta recording filename!
-    game = Game()
+    game = Game(None)
     game.run()
