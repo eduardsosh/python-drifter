@@ -15,7 +15,7 @@ class Game:
         pygame.display.set_caption("My Board")
 
         self.canvas.convert_alpha()
-        self.canvas.fill((0, 0, 0, 0))
+        self.canvas.fill((6, 56, 0))
         script_dir = os.path.dirname(os.path.abspath(__file__))
         assets_dir = os.path.join(script_dir, "..", "assets")
 
@@ -37,7 +37,7 @@ class Game:
 
         self.car = pygame.transform.scale(self.car, (40, 80))
 
-        self.color = (255, 255, 255)
+        self.color = (6, 56, 0)
         
         # Auto pozicija izmantojot formulu tiek atrasta pie starta linijas
         # Mainoties ekrana izmeram mainas auto sakotneja vieta
@@ -64,7 +64,6 @@ class Game:
         self.canvas.fill(self.color)
         self.canvas.blit(self.track, dest=self.position)
 
-    #https://stackoverflow.com/questions/4183208/how-do-i-rotate-an-image-around-its-center-using-pygame
     #Funkcija uzzime objektu nemot vera vina rotaciju
     def blitRotate(self, surf, image, pos, originPos, angle):
         image_rect = image.get_rect(topleft = (pos[0] - originPos[0], pos[1]-originPos[1]))
@@ -78,7 +77,7 @@ class Game:
         rotated_image_rect = rotated_image.get_rect(center = rotated_image_center)
 
         #draw the rect
-        pygame.draw.rect(surf, (255, 0, 0), (*rotated_image_rect.topleft, *rotated_image_rect.size),2)
+        #pygame.draw.rect(surf, (255, 0, 0), (*rotated_image_rect.topleft, *rotated_image_rect.size),2)
         surf.blit(rotated_image, rotated_image_rect)
     
 
