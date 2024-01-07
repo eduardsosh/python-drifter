@@ -45,3 +45,22 @@ class Recorder:
     def clear_recording(self):
         self.recording.clear()
         return
+    
+    def load_recording(self, filename):
+        REC_DIR = 'recordings'
+        # Ensure the directory exists
+        if not os.path.exists(REC_DIR):
+            os.makedirs(REC_DIR)
+
+        # Construct the full file path
+        full_path = os.path.join(REC_DIR, filename)
+
+        try:
+            with open(full_path, 'rb') as f:
+                self.recording = pickle.load(f)
+                return self.recording
+        except IOError:
+            print("Kluda ieladejot failu")
+            return
+        return
+    
