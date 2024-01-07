@@ -226,5 +226,6 @@ class Game:
 
 
 if __name__ == "__main__":
-    game = Game('recording20240107-202728.pkl')
+    # Padot argumenta recording filename!
+    game = Game(None)
     game.run()
