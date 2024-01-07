@@ -129,7 +129,7 @@ class Game:
             self.angular_velocity += min((speed/TOP_SPEED)*STEERING, 1)
         if keys[pygame.K_d]:
             self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
-        
+                    
         #Car has natural drag
         self.velocity_x *= (1-DRAG)
         self.velocity_y *= (1-DRAG)
