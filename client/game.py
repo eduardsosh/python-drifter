@@ -2,56 +2,64 @@ import pygame
 import os
 import math
 import sys
+import recording
 
 class Game:
     def __init__(self):
+        self.BG_COLOR = (6, 56, 0)
+        
         pygame.init()
-        self.screen_width = 1000
-        self.screen_height = 600
+        pygame.display.set_caption("Drifter")
+        screen_sizes = pygame.display.get_desktop_sizes()
+        self.screen_width = screen_sizes[0][0]-100
+        self.screen_height = screen_sizes[0][1]-100
+    
+        
         self.canvas = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.SRCALPHA)
-        pygame.display.set_caption("My Board")
-
         self.canvas.convert_alpha()
-        self.canvas.fill((0, 0, 0, 0))
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        assets_dir = os.path.join(script_dir, "..", "assets")
-
-        self.track = pygame.image.load(os.path.join(assets_dir, "track.png")).convert_alpha()
-        self.car = pygame.image.load(os.path.join(assets_dir, "car.png")).convert_alpha()
-        self.overlapped_mask = None 
+        self.canvas.fill(self.BG_COLOR)
         
-        #Create a collision mask for the track
-        self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255), (1, 1, 1, 255))
-        #Variable to show collisions
-        self.collided = False
         
-        self.ticks = 0
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.assets_dir = os.path.join(self.script_dir, "..", "assets")
 
-        self.last_col = 0
-
-        #Create a surface from track mask
-        self.mask_image = self.track_mask.to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
-
+        self.track = pygame.image.load(os.path.join(self.assets_dir, "track2.png")).convert_alpha()
+        self.car = pygame.image.load(os.path.join(self.assets_dir, "car.png")).convert_alpha()
         self.car = pygame.transform.scale(self.car, (40, 80))
+        
+        self.simplemask = pygame.mask.Mask((40, 40))
+        self.simplemask.fill()
+        
+        self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255), (1, 1, 1, 255))
+        
+        # Create an image from track mask for debugging
+        #self.mask_image = self.track_mask.to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
+        
+        self.collided = False
+        self.last_col = 0
+        self.ticks = 0        
 
-        self.color = (255, 255, 255)
-        self.x = 0
-        self.y = -500
+        # Auto pozicija izmantojot formulu tiek atrasta pie starta linijas
+        # Mainoties ekrana izmeram mainas auto sakotneja vieta
+        self.x = self.screen_width/2 - 2900
+        self.y = self.screen_height/2 - 1100
         self.position = (self.x, self.y)
         
         self.velocity_x = 0
         self.velocity_y = 0
         
         #orientation in degrees 0-360
-        self.orientation = 0
+        # Skatamies pa labi sakumaa
+        self.orientation = 270
         self.angular_velocity = 0
         
+        # Sadursmes vektors
         self.dx = 0
         self.dy = 0
         
-        #Simplified mask for the car
-        self.simplemask = pygame.mask.Mask((40, 40))
-        self.simplemask.fill()
+        
+        
+
 
         #countdown second count
         self.countdown_seconds = 3
@@ -72,10 +80,9 @@ class Game:
 
 
     def background(self):
-        self.canvas.fill(self.color)
+        self.canvas.fill(self.BG_COLOR)
         self.canvas.blit(self.track, dest=self.position)
 
-    #https://stackoverflow.com/questions/4183208/how-do-i-rotate-an-image-around-its-center-using-pygame
     #Funkcija uzzime objektu nemot vera vina rotaciju
     def blitRotate(self, surf, image, pos, originPos, angle):
         image_rect = image.get_rect(topleft = (pos[0] - originPos[0], pos[1]-originPos[1]))
@@ -89,8 +96,10 @@ class Game:
         rotated_image_rect = rotated_image.get_rect(center = rotated_image_center)
 
         #draw the rect
-        pygame.draw.rect(surf, (255, 0, 0), (*rotated_image_rect.topleft, *rotated_image_rect.size),2)
+        #pygame.draw.rect(surf, (255, 0, 0), (*rotated_image_rect.topleft, *rotated_image_rect.size),2)
         surf.blit(rotated_image, rotated_image_rect)
+        
+        
     
 
     def move(self):
@@ -173,6 +182,8 @@ class Game:
         
         """
         length = math.sqrt(self.dx**2 + self.dy**2)
+        if length == 0:
+            return
         self.dx /= length
         self.dy /= length
 
@@ -191,6 +202,9 @@ class Game:
         self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
         self.show_countdown()
         exit = False
+        
+        gamerecorder = recording.Recorder()
+        gamerecorder.clear_recording()
         while not exit:
             self.ticks += 1
             self.background()
@@ -198,15 +212,17 @@ class Game:
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
             self.detect_collision()
             
+            gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
             #self.canvas.blit(self.mask_image, dest=self.position)
             
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    gamerecorder.save_to_file()
                     exit = True
 
             pygame.display.update()
-            pygame.time.Clock().tick(30)
+            pygame.time.Clock().tick(45)
 
 
 if __name__ == "__main__":
