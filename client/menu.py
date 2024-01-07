@@ -1,7 +1,7 @@
 # menu.py
 import pygame
 import sys
-from main import Game  # Import the Game class
+from game import Game  # Import the Game class
 
 def show_menu():
     pygame.init()
