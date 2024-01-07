@@ -199,12 +199,12 @@ class Game:
         """
         Ta teikt main speles izpildes funkcija
         """
+        gamerecorder = recording.Recorder()
+        gamerecorder.clear_recording()
         self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
         self.show_countdown()
         exit = False
         
-        gamerecorder = recording.Recorder()
-        gamerecorder.clear_recording()
         while not exit:
             self.ticks += 1
             self.background()
