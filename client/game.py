@@ -2,46 +2,45 @@ import pygame
 import os
 import math
 import sys
+import recording
 
 class Game:
     def __init__(self):
+        self.BG_COLOR = (6, 56, 0)
+        
         pygame.init()
+        pygame.display.set_caption("Drifter")
         screen_sizes = pygame.display.get_desktop_sizes()
         self.screen_width = screen_sizes[0][0]-100
         self.screen_height = screen_sizes[0][1]-100
     
         
         self.canvas = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.SRCALPHA)
-        pygame.display.set_caption("My Board")
-
         self.canvas.convert_alpha()
-        self.canvas.fill((6, 56, 0))
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        assets_dir = os.path.join(script_dir, "..", "assets")
-
-        self.track = pygame.image.load(os.path.join(assets_dir, "track2.png")).convert_alpha()
-        self.car = pygame.image.load(os.path.join(assets_dir, "car.png")).convert_alpha()
-        self.overlapped_mask = None 
+        self.canvas.fill(self.BG_COLOR)
         
-        #Create a collision mask for the track
-        self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255), (1, 1, 1, 255))
-        #Variable to show collisions
-        self.collided = False
         
-        self.ticks = 0
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.assets_dir = os.path.join(self.script_dir, "..", "assets")
 
-        self.last_col = 0
-
-        #Create a surface from track mask
-        self.mask_image = self.track_mask.to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
-
+        self.track = pygame.image.load(os.path.join(self.assets_dir, "track2.png")).convert_alpha()
+        self.car = pygame.image.load(os.path.join(self.assets_dir, "car.png")).convert_alpha()
         self.car = pygame.transform.scale(self.car, (40, 80))
-
-        self.color = (6, 56, 0)
         
+        self.simplemask = pygame.mask.Mask((40, 40))
+        self.simplemask.fill()
+        
+        self.track_mask = pygame.mask.from_threshold(self.track, (0, 0, 0,255), (1, 1, 1, 255))
+        
+        # Create an image from track mask for debugging
+        #self.mask_image = self.track_mask.to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
+        
+        self.collided = False
+        self.last_col = 0
+        self.ticks = 0        
+
         # Auto pozicija izmantojot formulu tiek atrasta pie starta linijas
         # Mainoties ekrana izmeram mainas auto sakotneja vieta
-        
         self.x = self.screen_width/2 - 2900
         self.y = self.screen_height/2 - 1100
         self.position = (self.x, self.y)
@@ -50,18 +49,20 @@ class Game:
         self.velocity_y = 0
         
         #orientation in degrees 0-360
+        # Skatamies pa labi sakumaa
         self.orientation = 270
         self.angular_velocity = 0
         
+        # Sadursmes vektors
         self.dx = 0
         self.dy = 0
         
-        #Simplified mask for the car
-        self.simplemask = pygame.mask.Mask((40, 40))
-        self.simplemask.fill()
+        
+        
+
 
     def background(self):
-        self.canvas.fill(self.color)
+        self.canvas.fill(self.BG_COLOR)
         self.canvas.blit(self.track, dest=self.position)
 
     #Funkcija uzzime objektu nemot vera vina rotaciju
@@ -79,6 +80,8 @@ class Game:
         #draw the rect
         #pygame.draw.rect(surf, (255, 0, 0), (*rotated_image_rect.topleft, *rotated_image_rect.size),2)
         surf.blit(rotated_image, rotated_image_rect)
+        
+        
     
 
     def move(self):
@@ -180,6 +183,9 @@ class Game:
         """
         
         exit = False
+        
+        gamerecorder = recording.Recorder()
+        gamerecorder.clear_recording()
         while not exit:
             self.ticks += 1
             self.background()
@@ -187,11 +193,13 @@ class Game:
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
             self.detect_collision()
             
+            gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
             #self.canvas.blit(self.mask_image, dest=self.position)
             
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    gamerecorder.save_to_file()
                     exit = True
 
             pygame.display.update()
