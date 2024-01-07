@@ -5,23 +5,24 @@ import sys
 import recording
 
 class Game:
-    def __init__(self):
+    def __init__(self, ghostfile):
+        self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.assets_dir = os.path.join(self.script_dir, "..", "assets")
         self.BG_COLOR = (6, 56, 0)
+        
         
         pygame.init()
         pygame.display.set_caption("Drifter")
         screen_sizes = pygame.display.get_desktop_sizes()
-        self.screen_width = screen_sizes[0][0]-100
-        self.screen_height = screen_sizes[0][1]-100
+        # self.screen_width = screen_sizes[0][0]-100
+        # self.screen_height = screen_sizes[0][1]-100
+        self.screen_width = 1600
+        self.screen_height = 600
     
         
         self.canvas = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.SRCALPHA)
         self.canvas.convert_alpha()
         self.canvas.fill(self.BG_COLOR)
-        
-        
-        self.script_dir = os.path.dirname(os.path.abspath(__file__))
-        self.assets_dir = os.path.join(self.script_dir, "..", "assets")
 
         self.track = pygame.image.load(os.path.join(self.assets_dir, "track2.png")).convert_alpha()
         self.car = pygame.image.load(os.path.join(self.assets_dir, "car.png")).convert_alpha()
@@ -57,8 +58,14 @@ class Game:
         self.dx = 0
         self.dy = 0
         
-        
-        
+        self.ghost = False
+        if ghostfile:
+            playbackRecorder = recording.Recorder()
+            self.ghost_car = pygame.image.load(os.path.join(self.assets_dir, "car.png")).convert_alpha()
+            self.ghost_car = pygame.transform.scale(self.ghost_car, (40, 80))
+            self.ghost = True
+            self.ghoststates = playbackRecorder.load_recording(ghostfile)
+            print(self.ghoststates)
 
 
         #countdown second count
@@ -129,7 +136,7 @@ class Game:
             self.angular_velocity += min((speed/TOP_SPEED)*STEERING, 1)
         if keys[pygame.K_d]:
             self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
-        
+                    
         #Car has natural drag
         self.velocity_x *= (1-DRAG)
         self.velocity_y *= (1-DRAG)
@@ -205,11 +212,24 @@ class Game:
         self.show_countdown()
         exit = False
         
+        if self.ghost:
+            ghost_offset_x = (self.ghoststates[0].x+2900)
+            ghost_offset_y = (self.ghoststates[0].y+1100)
+        
         while not exit:
             self.ticks += 1
             self.background()
             self.move()
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
+            
+            if self.ghost:
+                if len(self.ghoststates) > 0:
+                    ghoststate = self.ghoststates.pop(0)
+                    self.blitRotate(self.canvas, self.ghost_car, (self.x - ghoststate.x + ghost_offset_x, self.y - ghoststate.y + ghost_offset_y), (20, 40), ghoststate.angle)
+                else:
+                    self.ghost = False
+            
+            
             self.detect_collision()
             
             gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
@@ -227,5 +247,5 @@ class Game:
 
 if __name__ == "__main__":
     # Padot argumenta recording filename!
-    game = Game(None)
+    game = Game()
     game.run()
