@@ -252,13 +252,14 @@ class Game:
             
             self.detect_collision()
             
-            gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
+            
+            #gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
             #self.canvas.blit(self.mask_image, dest=self.position)
             
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    gamerecorder.save_to_file()
+                    #gamerecorder.save_to_file()
                     exit = True
 
             pygame.display.update()

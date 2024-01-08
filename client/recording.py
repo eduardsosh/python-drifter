@@ -64,3 +64,7 @@ class Recorder:
             return
         return
     
+    def upload_recording(self, recording_name):
+        
+        return
+    
