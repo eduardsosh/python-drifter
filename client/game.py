@@ -11,6 +11,7 @@ class Game:
         self.BG_COLOR = (6, 56, 0)
         
         
+        
         pygame.init()
         pygame.display.set_caption("Drifter")
         screen_sizes = pygame.display.get_desktop_sizes()
@@ -105,7 +106,12 @@ class Game:
         #draw the rect
         #pygame.draw.rect(surf, (255, 0, 0), (*rotated_image_rect.topleft, *rotated_image_rect.size),2)
         surf.blit(rotated_image, rotated_image_rect)
-        
+    
+    def mainMenu(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            return True
+            
         
     
 
@@ -132,19 +138,19 @@ class Game:
         if keys[pygame.K_w] and speed < TOP_SPEED:
             self.velocity_x += math.sin(self.orientation*pidiv180)*POWER
             self.velocity_y += math.cos(self.orientation*pidiv180)*POWER
-        # if keys[pygame.K_a]:
-        #     self.angular_velocity += min((speed/TOP_SPEED)*STEERING, 1)
-        # if keys[pygame.K_d]:
-        #     self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
-
-        if keys[pygame.K_a] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))<math.pi:
+        if keys[pygame.K_a]:
             self.angular_velocity += min((speed/TOP_SPEED)*STEERING, 1)
-        elif keys[pygame.K_a] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))>math.pi:
+        if keys[pygame.K_d]:
             self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
-        if keys[pygame.K_d] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))<math.pi:
-            self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
-        elif keys[pygame.K_d] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))>math.pi:
-            self.angular_velocity = min((speed/TOP_SPEED)*STEERING, 1)
+
+        # if keys[pygame.K_a] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))<math.pi:
+        #     self.angular_velocity += min((speed/TOP_SPEED)*STEERING, 1)
+        # elif keys[pygame.K_a] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))>math.pi:
+        #     self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
+        # if keys[pygame.K_d] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))<math.pi:
+        #     self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
+        # elif keys[pygame.K_d] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))>math.pi:
+        #     self.angular_velocity = min((speed/TOP_SPEED)*STEERING, 1)
 
                     
         #Car has natural drag
@@ -231,6 +237,7 @@ class Game:
             self.background()
             self.move()
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
+            self.mainMenu()
             
             if self.ghost:
                 if len(self.ghoststates) > 0:
@@ -238,6 +245,9 @@ class Game:
                     self.blitRotate(self.canvas, self.ghost_car, (self.x - ghoststate.x + ghost_offset_x, self.y - ghoststate.y + ghost_offset_y), (20, 40), ghoststate.angle)
                 else:
                     self.ghost = False
+            
+            if self.mainMenu():
+                exit = True
             
             
             self.detect_collision()
