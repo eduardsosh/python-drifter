@@ -17,19 +17,24 @@ server_socket.bind((SERVER_HOST, SERVER_PORT))
 server_socket.listen(5)
 print(f"Server listening on {SERVER_HOST}:{SERVER_PORT}")
 
-def send_all_pickles(client_socket):
-    # Get a list of pickle files in the current directory
+
+def send_all_pickles(client_socket, BUFFER_SIZE=1024):
     pickle_files = [f for f in os.listdir() if f.endswith('.pkl')]
     
-    # Send the number of pickle files to the client
     client_socket.sendall(str(len(pickle_files)).encode())
 
-    # Send each pickle file
+    client_socket.recv(BUFFER_SIZE)
+
     for file in pickle_files:
+        client_socket.sendall(file.encode())
+        client_socket.recv(BUFFER_SIZE)
+
         with open(file, 'rb') as f:
             data = f.read()
             client_socket.sendall(data)
-            client_socket.recv(BUFFER_SIZE)  # Wait for acknowledgement
+
+        client_socket.recv(BUFFER_SIZE)
+
 
 def receive_pickle(client_socket):
     # Receive the size of the incoming file
