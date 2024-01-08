@@ -5,7 +5,9 @@ from game import Game  # Import the Game class
 def show_menu():
     pygame.init()
 
-    screen_width, screen_height = 1600, 600
+    screen_sizes = pygame.display.get_desktop_sizes()
+    screen_width = screen_sizes[0][0]-100
+    screen_height = screen_sizes[0][1]-100
     show_warning = False
     while True:
         screen = pygame.display.set_mode((screen_width, screen_height))
