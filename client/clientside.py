@@ -43,6 +43,15 @@ def get_all_runs():
     
         
 def upload_run(filename):
+    current_dir = os.path.dirname(__file__)
+    parent_dir = os.path.dirname(current_dir)
+    filepath = os.path.join(parent_dir, "recordings", filename)
+
+    print(filepath)
+    if not os.path.exists(filepath):
+        print("Fails neeksiste")
+        return -1
+    
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket.setdefaulttimeout(5)
     
@@ -54,10 +63,7 @@ def upload_run(filename):
     
     command = 'UPLOAD'
     server_socket.sendall(command.encode())
-    filepath = os.path.join('/recordings', filename)
-    if not os.path.exists(filepath):
-        print("Fails neeksiste")
-        return -1
+    
     
     file_size = os.path.getsize(filepath)
     server_socket.sendall(str(file_size).encode())
