@@ -1,14 +1,105 @@
 import pygame
 import sys
+import glob
 from game import Game  # Import the Game class
+
+def convert_ticks_to_time(ticks):
+    # There are 45 ticks in a second, so we calculate the total seconds first
+    total_seconds = ticks / 45
+
+    # Extract minutes from the total seconds
+    minutes = int(total_seconds // 60)
+
+    # Remainder seconds after extracting minutes
+    seconds = int(total_seconds % 60)
+
+    # Calculate milliseconds
+    # First, find the fractional part of the total seconds, then convert it to milliseconds
+    milliseconds = int((total_seconds - int(total_seconds)) * 1000)
+
+    return f"{minutes}:{seconds:02}:{milliseconds:03}"
+
+
+def leaderboard_list():
+    files = glob.glob("recordings/*")
+    entries = []
+    for filename in files:
+        entry=filename
+        entry=entry[11:]
+        entry=entry[:-4]
+        index = entry.rfind('_')
+        name = entry[:index]
+        time = entry[index + 1:]
+        entries.append((name, convert_ticks_to_time(int(time))))
+
+    print(entries)
+    return entries
+
+
+def show_leaderboard(screen, screen_width):
+    # Sample leaderboard data (replace with your actual data)
+    leaderboard_data = leaderboard_list()
+
+    # Colors
+    white = (255, 255, 255)
+    black = (0, 0, 0)
+
+    # Fonts
+    font = pygame.font.Font(None, 36)
+
+    # Calculate button positions
+    back_button = pygame.Rect(20, 20, 100, 50)
+
+    while True:
+        screen.fill(white)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if back_button.collidepoint(event.pos):
+                    return  # Return to the main menu if back button is clicked
+
+                # Check for clicks on leaderboard entries
+                for entry in leaderboard_data:
+                    entry_rect = entry["rect"]
+                    if entry_rect.collidepoint(event.pos):
+                        print(f"Clicked on entry: {entry['username']} - Time: {entry['time']}")
+                        # Add code to handle the click on the leaderboard entry
+
+        # Draw back button
+        pygame.draw.rect(screen, black, back_button)
+        back_text = font.render("Back", True, white)
+        screen.blit(back_text, (back_button.x + (back_button.width - back_text.get_width()) // 2, back_button.y + (back_button.height - back_text.get_height()) // 2))
+
+        # Draw leaderboard entries
+        entry_height = 50
+        entry_margin = 10
+        y_position = 100
+
+        for entry in leaderboard_data:
+            entry_rect = pygame.Rect((screen_width - 300) // 2, y_position, 300, entry_height)
+            entry["rect"] = entry_rect
+
+            pygame.draw.rect(screen, black, entry_rect)
+            entry_text = font.render(f"{entry['username']} - {entry['time']}", True, white)
+            screen.blit(entry_text, (entry_rect.x + 10, entry_rect.y + (entry_rect.height - entry_text.get_height()) // 2))
+
+            y_position += entry_height + entry_margin
+
+        pygame.display.flip()
+
 
 def show_menu():
     pygame.init()
 
     screen_sizes = pygame.display.get_desktop_sizes()
-    screen_width = screen_sizes[0][0]-100
-    screen_height = screen_sizes[0][1]-100
+    screen_width = screen_sizes[0][0] - 100
+    screen_height = screen_sizes[0][1] - 100
     show_warning = False
+
     while True:
         screen = pygame.display.set_mode((screen_width, screen_height))
         pygame.display.set_caption("Game Menu")
@@ -43,22 +134,13 @@ def show_menu():
                     sys.exit()
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if start_button.collidepoint(event.pos) and username:  # Only start if username is entered
+                    if start_button.collidepoint(event.pos) and username:  # Only start if the username is entered
                         game = Game(None, username)
                         game.run()
                         break
 
                     elif leaderboard_button.collidepoint(event.pos):
-                        while True:
-                            for event in pygame.event.get():
-                                if event.type == pygame.QUIT:
-                                    pygame.quit()
-                                    sys.exit()
-                                elif event.type == pygame.MOUSEBUTTONDOWN:
-                                    # Add code to handle clicking on leaderboard entries
-                                    pass
-
-                            pygame.display.flip()
+                        show_leaderboard(screen, screen_width)  # Call the function to display the leaderboard
 
                     elif quit_button.collidepoint(event.pos):
                         pygame.quit()
@@ -96,7 +178,7 @@ def show_menu():
             username_label = font.render("Username:", True, black)
             screen.blit(username_label, (username_rect.x - username_label.get_width() - 10, username_rect.y + (button_height - username_label.get_height()) // 2))
 
-            # Draw warning message if username is not entered
+            # Draw warning message if the username is not entered
             if not username:
                 show_warning = True  # Set the flag to show the warning
             else:
