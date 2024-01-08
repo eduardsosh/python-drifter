@@ -156,11 +156,18 @@ class Game:
         #Car has natural drag
         self.velocity_x *= (1-DRAG)
         self.velocity_y *= (1-DRAG)
-        
+
         self.angular_velocity *= (1-STEERING_DRAG)
         
         self.orientation += self.angular_velocity
-        
+        self.orientation %= 360
+
+        #Car slows down faster when drifting
+        self.angle = abs(math.atan2(self.velocity_y, self.velocity_x)-(math.radians(self.orientation)))
+        self.angle %= math.pi
+
+
+
         self.x = self.x + self.velocity_x
         self.y = self.y + self.velocity_y
         self.position = (self.x, self.y)
@@ -217,6 +224,17 @@ class Game:
         self.velocity_x = 1.5 * self.dx * dot - self.velocity_x
         self.velocity_y = 1.5 * self.dy * dot - self.velocity_y
 
+    # def sectors(self):
+    #     if self.x < 4000 / 2 and self.y < 4000 / 2:
+    #         print("Player in Sector 1")
+    #     if self.x >= 4000 / 2 and self.y < 4000 / 2:
+    #         print("Player in Sector 2")
+    #     if self.x < 4000 / 2 and self.y >= 4000 / 2:
+    #         print("Player in Sector 3")
+    #     if self.x >= 4000 / 2 and self.y >= 4000 / 2:
+    #         print("Player in Sector 4")
+
+
 
     def run(self):
         """
@@ -238,6 +256,8 @@ class Game:
             self.move()
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
             self.mainMenu()
+            #self.sectors()
+            print(self.angle)
             
             if self.ghost:
                 if len(self.ghoststates) > 0:
