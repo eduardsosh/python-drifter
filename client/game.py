@@ -254,6 +254,8 @@ class Game:
             
             
             #gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
+            
+            #gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
             #self.canvas.blit(self.mask_image, dest=self.position)
             
 
@@ -268,5 +270,5 @@ class Game:
 
 if __name__ == "__main__":
     # Padot argumenta recording filename!
-    game = Game('recording20240107-202728.pkl')
+    game = Game(None)
     game.run()
