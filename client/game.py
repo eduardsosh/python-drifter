@@ -283,7 +283,7 @@ class Game:
             self.check_checkpoint()
             self.mainMenu()
             #self.sectors()
-            print(self.angle)
+            #print(self.angle)
             
             #print(self.x, self.y)
             
