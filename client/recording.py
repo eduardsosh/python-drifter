@@ -24,14 +24,15 @@ class Recorder:
         self.recording.append(Carstate(tick,x,y,angle))
         return
 
-    def save_to_file(self):
+    def save_to_file(self,username,time):
+        # Time given in ticks. Game runs at 45 ticks per second
         REC_DIR = 'recordings'
         # Ensure the directory exists
         if not os.path.exists(REC_DIR):
             os.makedirs(REC_DIR)
 
         # Construct the full file path
-        filename = 'recording' + time.strftime("%Y%m%d-%H%M%S") + '.pkl'
+        filename = f'{username}_{time}.pkl'
         full_path = os.path.join(REC_DIR, filename)
 
         try:

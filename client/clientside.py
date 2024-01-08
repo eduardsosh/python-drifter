@@ -1,45 +1,81 @@
 import socket
 import os
 
-# Define the server's IP address and port
 SERVER_HOST = '45.93.138.56'
 SERVER_PORT = 55000
 BUFFER_SIZE = 1024
 
-# Create a socket object
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Connect to the server
-client_socket.connect((SERVER_HOST, SERVER_PORT))
 
-# Send command to the server
-command = input("Enter command (UPLOAD/GET_ALL): ").strip()
-client_socket.sendall(command.encode())
+def get_all_runs():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.setdefaulttimeout(5)
+    
+    try:
+        server_socket.connect((SERVER_HOST, SERVER_PORT))
+    except ConnectionRefusedError:
+        print("Serveris neatbild")
+        return -1
+    
+    command = 'GET_ALL'
+    server_socket.sendall(command.encode())
 
-if command == 'UPLOAD':
-    # Specify the file path
-    file_path = 'path_to_your_pickle_file.pkl'
+    server_socket.recv(BUFFER_SIZE)
+    
+    file_count = int(server_socket.recv(BUFFER_SIZE).decode())
 
-    # Send the file
-    with open(file_path, 'rb') as f:
-        data = f.read()
-        client_socket.sendall(str(len(data)).encode())
-        client_socket.recv(BUFFER_SIZE)  # Wait for acknowledgement
-        client_socket.sendall(data)
+    server_socket.sendall(b"ACK")
 
-elif command == 'GET_ALL':
-    # Receive the number of pickle files
-    num_files = int(client_socket.recv(BUFFER_SIZE).decode())
+    for _ in range(file_count):
+        filename = server_socket.recv(BUFFER_SIZE).decode()
 
-    for _ in range(num_files):
-        # Receive and save the pickle file
-        with open(f'received_{i}.pkl', 'wb') as f:
-            while True:
-                data = client_socket.recv(BUFFER_SIZE)
-                if not data:
-                    break
-                f.write(data)
-        client_socket.sendall(b'ACK')  # Send acknowledgement
+        server_socket.sendall(b"ACK")
 
-# Close the connection
-client_socket.close()
+        data = server_socket.recv(BUFFER_SIZE)
+
+        with open(filename, 'wb') as f:
+            f.write(data)
+
+        server_socket.sendall(b"ACK")
+
+    server_socket.close()
+
+    
+        
+def upload_run(filename):
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.setdefaulttimeout(5)
+    
+    try:
+        server_socket.connect((SERVER_HOST, SERVER_PORT))
+    except ConnectionRefusedError:
+        print("Serveris neatbild")
+        return -1
+    
+    command = 'UPLOAD'
+    server_socket.sendall(command.encode())
+    filepath = os.path.join('/recordings', filename)
+    if not os.path.exists(filepath):
+        print("Fails neeksiste")
+        return -1
+    
+    file_size = os.path.getsize(filepath)
+    server_socket.sendall(str(file_size).encode())
+    
+    with open(filepath, 'rb') as f:
+        while True:
+            data = f.read(BUFFER_SIZE)
+            if not data:
+                break
+            server_socket.sendall(data)
+            server_socket.recv(BUFFER_SIZE)  # Wait for acknowledgement
+    server_socket.close()
+    return 0
+        
+    
+    
+
+upload_run('test.pkl')
+
+
+    
