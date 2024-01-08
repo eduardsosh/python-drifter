@@ -17,7 +17,7 @@ class Game:
         screen_sizes = pygame.display.get_desktop_sizes()
         # self.screen_width = screen_sizes[0][0]-100
         # self.screen_height = screen_sizes[0][1]-100
-        self.screen_width = 1600
+        self.screen_width = 800
         self.screen_height = 600
     
         
@@ -38,6 +38,7 @@ class Game:
         #self.mask_image = self.track_mask.to_surface(setcolor=(255, 0, 0, 100), unsetcolor=(0, 0, 0, 0))
         
         self.collided = False
+        self.checkpoint_reached = False
         self.last_col = 0
         self.ticks = 0        
 
@@ -45,6 +46,9 @@ class Game:
         # Mainoties ekrana izmeram mainas auto sakotneja vieta
         self.x = self.screen_width/2 - 2900
         self.y = self.screen_height/2 - 1100
+        
+        self.startline_coords = [(self.x -40, self.y+300), (self.x-200, self.y-300)]
+        
         self.position = (self.x, self.y)
         
         self.velocity_x = 0
@@ -202,6 +206,19 @@ class Game:
 
             return False
     
+    def check_checkpoint(self):
+        checkpoint_coords = (-750,-3000)
+        offset = 1000
+        if self.x > checkpoint_coords[0] - offset and self.x < checkpoint_coords[0] + offset and self.y > checkpoint_coords[1] - offset and self.y < checkpoint_coords[1] + offset:
+            if not self.checkpoint_reached:
+                print("Checkpoint reached")
+            self.checkpoint_reached = True
+            return True
+
+    def check_startline(self):
+        if self.x < self.startline_coords[0][0] and self.x > self.startline_coords[1][0] and self.y < self.startline_coords[0][1] and self.y > self.startline_coords[1][1]:
+            return True
+    
     def bounce(self):
         """
         dx un dy ir vektors uz sadursmes punktu
@@ -251,13 +268,18 @@ class Game:
             ghost_offset_y = (self.ghoststates[0].y+1100)
         
         while not exit:
+
+            
             self.ticks += 1
             self.background()
             self.move()
             self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
+            self.check_checkpoint()
             self.mainMenu()
             #self.sectors()
             print(self.angle)
+            
+            #print(self.x, self.y)
             
             if self.ghost:
                 if len(self.ghoststates) > 0:
@@ -272,13 +294,19 @@ class Game:
             
             self.detect_collision()
             
-            gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
-            #self.canvas.blit(self.mask_image, dest=self.position)
             
+            #gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
+            
+            #gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
+            #self.canvas.blit(self.mask_image, dest=self.position)
+            if self.checkpoint_reached and self.check_startline():
+                print("Finish")
+                #gamerecorder.save_to_file()
+                exit = True
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    gamerecorder.save_to_file()
+                    #gamerecorder.save_to_file()
                     exit = True
 
             pygame.display.update()
@@ -287,5 +315,5 @@ class Game:
 
 if __name__ == "__main__":
     # Padot argumenta recording filename!
-    game = Game('recording20240107-202728.pkl')
+    game = Game(None)
     game.run()
