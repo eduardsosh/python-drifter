@@ -36,65 +36,46 @@ def send_all_pickles(client_socket, BUFFER_SIZE=1024):
         client_socket.recv(BUFFER_SIZE)
 
 
-def upload_run(filename):
+def receive_pickle(client_socket):
+    BUFFER_SIZE = 1024  # Define a suitable buffer size
 
-    # Constructing the file path
-    current_dir = os.path.dirname(__file__)
-    parent_dir = os.path.dirname(current_dir)
-    filepath = os.path.join(parent_dir, "recordings", filename)
+    # Function to receive a fixed amount of data
+    def recvall(sock, n):
+        data = bytearray()
+        while len(data) < n:
+            packet = sock.recv(n - len(data))
+            if not packet:
+                return None
+            data.extend(packet)
+        return data
 
-    print(filepath)
+    # Receive the size of the incoming file
+    size_data = recvall(client_socket, 4)
+    if not size_data:
+        raise ValueError("Failed to receive the file size")
 
-    # Check if file exists
-    if not os.path.exists(filepath):
-        print("File does not exist")
-        return -1
+    file_size = int.from_bytes(size_data, 'big')
 
-    # Initialize socket
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.settimeout(5)  # Timeout for socket operations
+    # Receive the file
+    file_data = recvall(client_socket, file_size)
+    if not file_data:
+        raise ValueError("Failed to receive the file")
 
-    try:
-        # Connect to server
-        server_socket.connect((SERVER_HOST, SERVER_PORT))
+    with open('received_file.pkl', 'wb') as f:
+        f.write(file_data)
 
-        # Send upload command
-        command = 'UPLOAD'
-        server_socket.sendall(command.encode())
+while True:
+    # Accept a connection
+    client_socket, client_address = server_socket.accept()
+    print(f"Connected to {client_address}")
 
-        # Send file size
-        file_size = os.path.getsize(filepath)
-        server_socket.sendall(str(file_size).encode())
+    # Receive the command from the client
+    command = client_socket.recv(BUFFER_SIZE).decode()
 
-        # Open file and start sending
-        with open(filepath, 'rb') as f:
-            while True:
-                data = f.read(BUFFER_SIZE)
-                if not data:
-                    break
-                server_socket.sendall(data)
-                # Optionally wait for acknowledgment
+    if command == 'UPLOAD':
+        receive_pickle(client_socket)
+    elif command == 'GET_ALL':
+        send_all_pickles(client_socket)
 
-        # Send a message to indicate file transfer completion
-        server_socket.sendall(b"END_OF_FILE")
-
-    except FileNotFoundError:
-        print("File not found: " + filepath)
-        return -1
-    except ConnectionRefusedError:
-        print("Server is not responding")
-        return -1
-    except socket.timeout:
-        print("Socket operation timed out")
-        return -1
-    except socket.error as e:
-        print("Socket error:", e)
-        return -1
-    except Exception as e:
-        print("An unexpected error occurred:", e)
-        return -1
-    finally:
-        # Ensure the socket is closed even if an error occurs
-        server_socket.close()
-
-    return 0
+    # Close the connection
+    client_socket.close()
