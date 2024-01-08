@@ -37,17 +37,32 @@ def send_all_pickles(client_socket, BUFFER_SIZE=1024):
 
 
 def receive_pickle(client_socket):
+    BUFFER_SIZE = 1024  # Define a suitable buffer size
+
+    # Function to receive a fixed amount of data
+    def recvall(sock, n):
+        data = bytearray()
+        while len(data) < n:
+            packet = sock.recv(n - len(data))
+            if not packet:
+                return None
+            data.extend(packet)
+        return data
+
     # Receive the size of the incoming file
-    file_size = int(client_socket.recv(BUFFER_SIZE).decode())
+    size_data = recvall(client_socket, 4)
+    if not size_data:
+        raise ValueError("Failed to receive the file size")
+
+    file_size = int.from_bytes(size_data, 'big')
 
     # Receive the file
+    file_data = recvall(client_socket, file_size)
+    if not file_data:
+        raise ValueError("Failed to receive the file")
+
     with open('received_file.pkl', 'wb') as f:
-        remaining = file_size
-        while remaining:
-            data = client_socket.recv(min(BUFFER_SIZE, remaining))
-            if not data: break
-            f.write(data)
-            remaining -= len(data)
+        f.write(file_data)
 
 while True:
     # Accept a connection
