@@ -6,6 +6,7 @@ import recording
 
 class Game:
     def __init__(self, ghostfile, username):
+        # Lietotājvārds priekš ieraksta
         self.username = username
         
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -184,6 +185,11 @@ class Game:
 
 
     def detect_collision(self):
+        """
+        Funkcija pārbauda vai ir notikusi sadursme ar malu.
+        Tas tiek darīts izmantojot pygame.mask objektus ar 
+        auto hitbox un melnas malas masku
+        """
         OFFSET_X = -20
         OFFSET_Y = -20
         car_mask = self.simplemask
@@ -203,6 +209,8 @@ class Game:
             print(self.dx, self.dy)
             print(math.degrees(math.atan2(self.dx, self.dy)))
             self.collided = True
+            
+            # Ja ir sadursme, tad atspogulojam masinas virziena vektoru
             if self.ticks - self.last_col > 10:
                 self.bounce()
                 self.last_col = self.ticks
@@ -212,6 +220,7 @@ class Game:
 
             return False
     
+    # Lai nekraptos, parbaudam vai ir sasniegts checkpoints
     def check_checkpoint(self):
         checkpoint_coords = (-750,-3000)
         offset = 1000
