@@ -2,8 +2,8 @@ import socket
 import os
 
 # Define the server's IP address and port
-SERVER_HOST = 'infoauto.lv'
-SERVER_PORT = 12345
+SERVER_HOST = '45.93.138.56'
+SERVER_PORT = 55000
 BUFFER_SIZE = 1024
 
 # Create a socket object
