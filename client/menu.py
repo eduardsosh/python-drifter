@@ -109,7 +109,7 @@ def show_menu():
             screen.blit(username_label, (username_rect.x - username_label.get_width() - 10, username_rect.y + (button_height - username_label.get_height()) // 2))
 
             # Draw warning message if username is not entered
-            if not username:
+            if not username or validate_username(username) == False:
                 show_warning = True  # Set the flag to show the warning
             else:
                 show_warning = False  # Reset the flag when the username is entered
@@ -125,7 +125,7 @@ def show_menu():
 
             # Draw the warning message if the flag is set
             if show_warning:
-                warning_text = font.render("To start enter username", True, (255, 0, 0))
+                warning_text = font.render("Enter a valid username", True, (255, 0, 0))
                 warning_rect = warning_text.get_rect(center=(screen_width // 2, username_rect.bottom + 20))
                 pygame.draw.rect(screen, white, warning_rect)
                 screen.blit(warning_text, warning_rect.topleft)
