@@ -215,7 +215,7 @@ def show_menu():
 
             # Draw the warning message if the flag is set
             if show_warning:
-                warning_text = font.render("Enter a valid username (> 3 symbols)", True, (255, 0, 0))
+                warning_text = font.render("Lai spēlētu ievadiet lietotājvārdu (virs 3 simboli)", True, (255, 0, 0))
                 warning_rect = warning_text.get_rect(center=(screen_width // 2, username_rect.bottom + 20))
                 pygame.draw.rect(screen, white, warning_rect)
                 screen.blit(warning_text, warning_rect.topleft)
