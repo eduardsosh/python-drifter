@@ -73,6 +73,7 @@ class Game:
             playbackRecorder = recording.Recorder()
             self.ghost_car = pygame.image.load(os.path.join(self.assets_dir, "car.png")).convert_alpha()
             self.ghost_car = pygame.transform.scale(self.ghost_car, (40, 80))
+            self.ghost_car.set_alpha(128)
             self.ghost = True
             self.ghoststates = playbackRecorder.load_recording(ghostfile)
             #print(self.ghoststates)
@@ -323,5 +324,5 @@ class Game:
 
 if __name__ == "__main__":
     # Padot argumenta recording filename!
-    game = Game(None,'eduardsosh')
+    game = Game("eduardsosh_1676.pkl",'eduardsosh')
     game.run()
