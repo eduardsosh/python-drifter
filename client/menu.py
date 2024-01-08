@@ -1,6 +1,18 @@
 import pygame
 import sys
 from game import Game  # Import the Game class
+import re
+
+
+def validate_username(username):
+    if len(username) < 3:
+        return False
+    if re.match(r'^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*|.*\.$|.*\s$|.*\.$)(\..+)?$)[^<>:"/\\|?*\.\s]+$', username):
+        return True
+    else:
+        return False
+    
+
 
 def show_menu():
     pygame.init()
