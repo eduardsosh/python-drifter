@@ -38,7 +38,7 @@ def show_menu():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if start_button.collidepoint(event.pos):
-                        game = Game('recording20240107-202728.pkl')
+                        game = Game('recording20240107-195930.pkl')
                         game.run()
                         break
 
