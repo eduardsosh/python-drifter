@@ -5,7 +5,9 @@ import sys
 import recording
 
 class Game:
-    def __init__(self, ghostfile):
+    def __init__(self, ghostfile, username):
+        self.username = username
+        
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
         self.assets_dir = os.path.join(self.script_dir, "..", "assets")
         self.BG_COLOR = (6, 56, 0)
@@ -15,10 +17,10 @@ class Game:
         pygame.init()
         pygame.display.set_caption("Drifter")
         screen_sizes = pygame.display.get_desktop_sizes()
-        # self.screen_width = screen_sizes[0][0]-100
-        # self.screen_height = screen_sizes[0][1]-100
-        self.screen_width = 800
-        self.screen_height = 600
+        self.screen_width = screen_sizes[0][0]-100
+        self.screen_height = screen_sizes[0][1]-100
+        #self.screen_width = 800
+        #self.screen_height = 600
     
         
         self.canvas = pygame.display.set_mode((self.screen_width, self.screen_height), pygame.SRCALPHA)
@@ -63,6 +65,9 @@ class Game:
         self.dx = 0
         self.dy = 0
         
+        self.raceticks = 0
+        self.succesful_finish = False
+        
         self.ghost = False
         if ghostfile:
             playbackRecorder = recording.Recorder()
@@ -70,7 +75,7 @@ class Game:
             self.ghost_car = pygame.transform.scale(self.ghost_car, (40, 80))
             self.ghost = True
             self.ghoststates = playbackRecorder.load_recording(ghostfile)
-            print(self.ghoststates)
+            #print(self.ghoststates)
 
 
         #countdown second count
@@ -275,18 +280,21 @@ class Game:
             self.detect_collision()
             
             
-            #gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
+            gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
             
             #gamerecorder.record_state(self.ticks, self.x, self.y, self.orientation)
             #self.canvas.blit(self.mask_image, dest=self.position)
             if self.checkpoint_reached and self.check_startline():
+                
                 print("Finish")
-                #gamerecorder.save_to_file()
+                self.raceticks = self.ticks
+                self.succesful_finish = True
+                gamerecorder.save_to_file(self.username, self.ticks)
                 exit = True
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    #gamerecorder.save_to_file()
+
                     exit = True
 
             pygame.display.update()
@@ -295,5 +303,5 @@ class Game:
 
 if __name__ == "__main__":
     # Padot argumenta recording filename!
-    game = Game(None)
+    game = Game(None,'eduardsosh')
     game.run()
