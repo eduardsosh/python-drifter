@@ -91,7 +91,7 @@ class Game:
             countdown_surface.blit(text, text_rect)
             self.canvas.fill((255, 255, 255))  # Clear the canvas
             self.canvas.blit(self.track, dest=self.position)  # Draw game elements
-            self.canvas.blit(self.car, (self.screen_width / 2 - 20, self.screen_height / 2 - 40))
+            self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
             self.canvas.blit(countdown_surface, (0, 0))  # Overlay countdown surface
             pygame.display.flip()
             pygame.time.delay(1000)  # Delay for 1 second
@@ -265,7 +265,7 @@ class Game:
         """
         gamerecorder = recording.Recorder()
         gamerecorder.clear_recording()
-        self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
+        #self.blitRotate(self.canvas, self.car, (self.screen_width/2, self.screen_height/2), (20, 40), self.orientation)
         self.show_countdown()
         exit = False
         
@@ -324,5 +324,5 @@ class Game:
 
 if __name__ == "__main__":
     # Padot argumenta recording filename!
-    game = Game("eduardsosh_1676.pkl",'eduardsosh')
+    game = Game(None,'eduardsosh')
     game.run()
