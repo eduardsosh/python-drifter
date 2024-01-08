@@ -132,10 +132,20 @@ class Game:
         if keys[pygame.K_w] and speed < TOP_SPEED:
             self.velocity_x += math.sin(self.orientation*pidiv180)*POWER
             self.velocity_y += math.cos(self.orientation*pidiv180)*POWER
-        if keys[pygame.K_a]:
+        # if keys[pygame.K_a]:
+        #     self.angular_velocity += min((speed/TOP_SPEED)*STEERING, 1)
+        # if keys[pygame.K_d]:
+        #     self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
+
+        if keys[pygame.K_a] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))<math.pi:
             self.angular_velocity += min((speed/TOP_SPEED)*STEERING, 1)
-        if keys[pygame.K_d]:
+        elif keys[pygame.K_a] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))>math.pi:
             self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
+        if keys[pygame.K_d] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))<math.pi:
+            self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
+        elif keys[pygame.K_d] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))>math.pi:
+            self.angular_velocity = min((speed/TOP_SPEED)*STEERING, 1)
+
                     
         #Car has natural drag
         self.velocity_x *= (1-DRAG)
@@ -247,5 +257,5 @@ class Game:
 
 if __name__ == "__main__":
     # Padot argumenta recording filename!
-    game = Game()
+    game = Game('recording20240107-202728.pkl')
     game.run()
