@@ -1,64 +1,45 @@
 import socket
-import json
-import threading
-import time
+import os
 
-# Server IP and Port
-SERVER_IP = '45.93.138.56'
-SERVER_PORT = 55000
+# Define the server's IP address and port
+SERVER_HOST = 'infoauto.lv'
+SERVER_PORT = 12345
+BUFFER_SIZE = 1024
 
-# Client's player ID and initial coordinates
-player_id = "player1"
-car_coordinates = {"x": 0, "y": 0}
+# Create a socket object
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# Create a UDP socket
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# Connect to the server
+client_socket.connect((SERVER_HOST, SERVER_PORT))
 
-# Flag to control the main loop
-running = True
+# Send command to the server
+command = input("Enter command (UPLOAD/GET_ALL): ").strip()
+client_socket.sendall(command.encode())
 
-def send_coordinates():
-    global running
-    while running:
-        try:
-            # Simulate car movement
-            car_coordinates["x"] += 1
-            car_coordinates["y"] += 1
+if command == 'UPLOAD':
+    # Specify the file path
+    file_path = 'path_to_your_pickle_file.pkl'
 
-            # Prepare and send data to the server
-            data = json.dumps({"player_id": player_id, "coordinates": car_coordinates})
-            client_socket.sendto(data.encode(), (SERVER_IP, SERVER_PORT))
+    # Send the file
+    with open(file_path, 'rb') as f:
+        data = f.read()
+        client_socket.sendall(str(len(data)).encode())
+        client_socket.recv(BUFFER_SIZE)  # Wait for acknowledgement
+        client_socket.sendall(data)
 
-            # Wait before sending the next update
-            time.sleep(1)
-        except Exception as e:
-            print(f"Error sending data: {e}")
-            running = False
+elif command == 'GET_ALL':
+    # Receive the number of pickle files
+    num_files = int(client_socket.recv(BUFFER_SIZE).decode())
 
-def receive_updates():
-    global running
-    while running:
-        try:
-            # Receive data from the server
-            data, _ = client_socket.recvfrom(1024)
-            print("Received data:", data.decode())
-        except Exception as e:
-            print(f"Error receiving data: {e}")
-            running = False
+    for _ in range(num_files):
+        # Receive and save the pickle file
+        with open(f'received_{i}.pkl', 'wb') as f:
+            while True:
+                data = client_socket.recv(BUFFER_SIZE)
+                if not data:
+                    break
+                f.write(data)
+        client_socket.sendall(b'ACK')  # Send acknowledgement
 
-def start_client():
-    # Start a thread to send coordinates
-    sender_thread = threading.Thread(target=send_coordinates)
-    sender_thread.start()
-
-    # Start a thread to receive updates
-    receiver_thread = threading.Thread(target=receive_updates)
-    receiver_thread.start()
-
-    # Wait for threads to finish
-    sender_thread.join()
-    receiver_thread.join()
-    client_socket.close()
-
-if __name__ == "__main__":
-    start_client()
+# Close the connection
+client_socket.close()
