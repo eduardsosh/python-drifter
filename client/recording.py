@@ -25,7 +25,6 @@ class Recorder:
         return
 
     def save_to_file(self,username,time):
-        # Time given in ticks. Game runs at 45 ticks per second
         REC_DIR = 'recordings'
         # Ensure the directory exists
         if not os.path.exists(REC_DIR):
