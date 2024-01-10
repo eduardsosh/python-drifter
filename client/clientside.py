@@ -144,5 +144,3 @@ def get_files_from_server():
         return
     finally:
         conn.close()
-    
-get_files_from_server()
