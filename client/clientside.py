@@ -115,6 +115,11 @@ def get_files_from_server():
         print("file data:",file_data)
         conn.send(ACK.encode())
         
+        if len(file_data) == 0:
+            print("No files to receive")
+            conn.close()
+            raise Exception("No files to receive")
+        
         parent_dir = os.path.dirname(os.path.realpath(__file__))
         recording_dir = "recordings"
         if not os.path.exists(recording_dir):
@@ -143,3 +148,4 @@ def get_files_from_server():
             raise Exception("Server did not send DISCONNECT")
         conn.close()
     
+get_files_from_server()
