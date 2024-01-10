@@ -180,3 +180,5 @@ def start():
         thread.start()
         print(f"Active connections: {threading.active_count() - 1}")
 
+if __name__ == "__main__":
+    start()
