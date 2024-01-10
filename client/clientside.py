@@ -117,8 +117,7 @@ def get_files_from_server():
         
         if len(file_data) == 0:
             print("No files to receive")
-            conn.close()
-            raise Exception("No files to receive")
+            return
         
         parent_dir = os.path.dirname(os.path.realpath(__file__))
         recording_dir = "recordings"
@@ -144,8 +143,6 @@ def get_files_from_server():
         print(e)
         return
     finally:
-        if conn.recv(BUFFER_SIZE).decode() != DISCONNECT:
-            raise Exception("Server did not send DISCONNECT")
         conn.close()
     
 get_files_from_server()

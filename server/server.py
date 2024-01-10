@@ -143,8 +143,6 @@ def receive_files(conn):
     except Exception as e:
         print(f"General error: {e}")
     finally:
-        # 5.
-        conn.send(DISCONNECT.encode())
         conn.close()
     
         
