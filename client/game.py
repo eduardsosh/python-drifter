@@ -158,10 +158,10 @@ class Game:
         Te tiek darita masinas kustibas fizika
         """
         #Car specs
-        POWER = 0.3
+        POWER = 0.3 #0.3
         STEERING = 1.05
         TOP_SPEED = 30
-        DRAG = 0.02
+        DRAG = 0.02 #0.02
         STEERING_DRAG = 0.05
         
         pidiv180 = math.pi/180

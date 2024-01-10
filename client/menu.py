@@ -109,7 +109,7 @@ def show_leaderboard(screen, screen_width, set_username):
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if back_button.collidepoint(event.pos):
-                    return  # Return to the main menu if the back button is clicked
+                    show_menu()
 
                 elif next_button.collidepoint(event.pos):
                     current_page += 1
