@@ -2,12 +2,13 @@ from dataclasses import dataclass
 import pickle
 import time
 import os
+import clientside
 
 """
 Izveidosim klasi, kas glabas informaciju par masinu
 Glabasim informaciju pickle formata
 """
-
+REC_DIR = 'recordings'
 
 @dataclass
 class Carstate:
@@ -25,7 +26,6 @@ class Recorder:
         return
 
     def save_to_file(self,username,time):
-        REC_DIR = 'recordings'
         # Ensure the directory exists
         if not os.path.exists(REC_DIR):
             os.makedirs(REC_DIR)
@@ -40,14 +40,13 @@ class Recorder:
         except IOError:
             print("Kluda saglabajot failu")
             return
-        return
+        return filename
 
     def clear_recording(self):
         self.recording.clear()
         return
     
     def load_recording(self, filename):
-        REC_DIR = 'recordings'
         # Ensure the directory exists
         if not os.path.exists(REC_DIR):
             os.makedirs(REC_DIR)
@@ -66,6 +65,7 @@ class Recorder:
     
     # Online nav implementets :(
     def upload_recording(self, recording_name):
-        
+        file_path = os.path.join(REC_DIR, recording_name)
+        clientside.send_file_to_server(file_path)
         return
     
