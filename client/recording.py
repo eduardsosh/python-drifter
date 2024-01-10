@@ -61,7 +61,7 @@ class Recorder:
         except IOError:
             print("Kluda ieladejot failu")
             return
-        return
+        return filename
     
     # Online nav implementets :(
     def upload_recording(self, recording_name):
