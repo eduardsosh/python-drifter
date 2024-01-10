@@ -53,7 +53,8 @@ def send_files(conn):
         data = json.loads(data)
         file_name = data["file_name"]
         file_size = data["file_size"]
-
+        file_name = file_name.replace("recordings\\", "").replace("recordings/", "")
+        
         # 4.
         #conn.send(ACK.encode())
         print(f"Receiving {file_name} ({file_size} bytes)")
