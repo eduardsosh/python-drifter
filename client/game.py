@@ -3,7 +3,6 @@ import os
 import math
 import sys
 import recording
-import clientside
 
 class Game:
     def __init__(self, ghostfile, username):
@@ -198,7 +197,7 @@ class Game:
         # self.drifting_drag = abs(self.angle-90)
         self.correct_angle = (self.orientation-90)%360
         self.angle = (math.atan2(self.velocity_y, self.velocity_x)-(self.correct_angle*pidiv180))
-        self.angle = math.degrees(self.angle)-self.orientation
+        self.angle = math.degrees(self.angle)
         #print(math.atan2(self.velocity_y, self.velocity_x), self.correct_angle*pidiv180)
         print(self.angle)
         #Car has natural drag
@@ -349,10 +348,7 @@ class Game:
                 print("Finish")
                 self.raceticks = self.ticks
                 self.succesful_finish = True
-                
-                #save to file returns filename
-                last_game = gamerecorder.save_to_file(self.username, self.ticks)
-                gamerecorder.upload_recording(last_game)
+                gamerecorder.save_to_file(self.username, self.ticks)
                 exit = True
 
             for event in pygame.event.get():
