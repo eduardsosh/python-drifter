@@ -348,7 +348,8 @@ class Game:
                 print("Finish")
                 self.raceticks = self.ticks
                 self.succesful_finish = True
-                gamerecorder.save_to_file(self.username, self.ticks)
+                filename = gamerecorder.save_to_file(self.username, self.ticks)
+                gamerecorder.upload_recording(filename)
                 exit = True
 
             for event in pygame.event.get():
