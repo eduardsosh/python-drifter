@@ -64,6 +64,8 @@ def delete_rides():
 
 def show_leaderboard(screen, screen_width, set_username):
 
+
+    username = ''
     leaderboard_data = leaderboard_list()
 
     # Colors
@@ -130,9 +132,11 @@ def show_leaderboard(screen, screen_width, set_username):
                 # Check for clicks on the download and delete buttons
                 if download_button.collidepoint(event.pos):
                     download_rides()  # Call the download function
+                    show_leaderboard(screen, screen_width, username)
 
                 elif delete_button.collidepoint(event.pos):
                     delete_rides()  # Call the delete function
+                    show_leaderboard(screen, screen_width, username)
 
         # Draw back button
         pygame.draw.rect(screen, black, back_button)
@@ -197,6 +201,9 @@ def show_menu():
 
         button_y_start = (screen_height - (4 * BUTTON_HEIGHT + 3 * BUTTON_MARGIN)) // 2
 
+        drifter_text = font.render("Drifter", True, (0, 0, 0))
+        drifter_text_rect = drifter_text.get_rect(center=(screen_width // 2, 50))
+
         start_button = pygame.Rect((screen_width - BUTTON_WIDTH) // 2, button_y_start, BUTTON_WIDTH, BUTTON_HEIGHT)
         leaderboard_button = pygame.Rect((screen_width - BUTTON_WIDTH) // 2, button_y_start + BUTTON_HEIGHT + BUTTON_MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT)
         quit_button = pygame.Rect((screen_width - BUTTON_WIDTH) // 2, button_y_start + 2 * (BUTTON_HEIGHT + BUTTON_MARGIN), BUTTON_WIDTH, BUTTON_HEIGHT)
@@ -241,6 +248,8 @@ def show_menu():
                     else:
                         active = False
 
+            screen.blit(drifter_text, drifter_text_rect.topleft)
+
             draw_button(screen, start_button, BLACK, "Start", font, WHITE)
             draw_button(screen, leaderboard_button, BLACK, "Leaderboard", font, WHITE)
             draw_button(screen, quit_button, BLACK, "Quit", font, WHITE)
@@ -249,7 +258,7 @@ def show_menu():
             pygame.draw.rect(screen, (220, 220, 220), username_rect)
             txt_surface = font.render(username, True, BLACK)
             width = max(USERNAME_RECT_WIDTH, txt_surface.get_width() + 10)
-            username_rect.w = width
+            username_rect.width = width
             screen.blit(txt_surface, (username_rect.x + 5, username_rect.y + 5))
 
             username_label = font.render("Username:", True, BLACK)
