@@ -116,6 +116,11 @@ def receive_files(conn):
             raise Exception("File data not sent")
         
         # 4.
+        if len(file_data) == 0:
+            print("No files to send")
+            conn.close()
+            return
+        
         for file_name, file_size in file_data.items():
             print(f"Sending {file_name} ({file_size} bytes)")
             
