@@ -3,6 +3,7 @@ import os
 import math
 import sys
 import recording
+import clientside
 
 class Game:
     def __init__(self, ghostfile, username):
@@ -348,7 +349,10 @@ class Game:
                 print("Finish")
                 self.raceticks = self.ticks
                 self.succesful_finish = True
-                gamerecorder.save_to_file(self.username, self.ticks)
+                
+                #save to file returns filename
+                last_game = gamerecorder.save_to_file(self.username, self.ticks)
+                gamerecorder.upload_recording(last_game)
                 exit = True
 
             for event in pygame.event.get():
