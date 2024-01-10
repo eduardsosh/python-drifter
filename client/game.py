@@ -124,7 +124,34 @@ class Game:
             return True
             
         
-    
+    def angle_between_vectors(self, velocity_x, velocity_y, orientation):
+        # Convert orientation from degrees to radians
+        orientation_radians = orientation*(math.pi/180)
+
+        # Calculate the components of the orientation vector
+        orientation_x = math.cos(orientation_radians)
+        orientation_y = math.sin(orientation_radians)
+
+        # Calculate the dot product of the velocity and orientation vectors
+        dot_product = velocity_x * orientation_x + velocity_y * orientation_y
+
+        # Calculate the magnitudes of the vectors
+        magnitude_velocity = math.sqrt(velocity_x**2 + velocity_y**2)
+        magnitude_orientation = math.sqrt(orientation_x**2 + orientation_y**2)
+
+        # Check if either magnitude is zero to avoid division by zero
+        if magnitude_velocity == 0 or magnitude_orientation == 0:
+            return 0  # You can handle this case as needed
+
+        # Calculate the angle in radians
+        angle_radians = math.acos(dot_product / (magnitude_velocity * magnitude_orientation))
+
+        # Convert the angle from radians to degrees
+        angle_degrees = (math.degrees(angle_radians))
+        print(angle_degrees)
+
+        return angle_degrees
+
 
     def move(self):
         """
@@ -162,8 +189,17 @@ class Game:
         #     self.angular_velocity -= min((speed/TOP_SPEED)*STEERING, 1)
         # elif keys[pygame.K_d] and abs(math.atan2(self.velocity_y, self.velocity_x)-(self.orientation*pidiv180))>math.pi:
         #     self.angular_velocity = min((speed/TOP_SPEED)*STEERING, 1)
+            
 
-                    
+        #Car slows down faster when drifting
+        #self.angle = self.angle_between_vectors(self.velocity_x, self.velocity_y, self.orientation)
+        #print(self.velocity_x, self.velocity_y, self.orientation)
+        # self.drifting_drag = abs(self.angle-90)
+        self.correct_angle = (self.orientation-90)%360
+        self.angle = (math.atan2(self.velocity_y, self.velocity_x)-(self.correct_angle*pidiv180))
+        self.angle = math.degrees(self.angle)-self.orientation
+        #print(math.atan2(self.velocity_y, self.velocity_x), self.correct_angle*pidiv180)
+        print(self.angle)
         #Car has natural drag
         self.velocity_x *= (1-DRAG)
         self.velocity_y *= (1-DRAG)
@@ -172,12 +208,6 @@ class Game:
         
         self.orientation += self.angular_velocity
         self.orientation %= 360
-
-        #Car slows down faster when drifting
-        self.angle = abs(math.atan2(self.velocity_y, self.velocity_x)-(math.radians(self.orientation)))
-        self.angle %= math.pi
-
-
 
         self.x = self.x + self.velocity_x
         self.y = self.y + self.velocity_y
@@ -292,7 +322,6 @@ class Game:
             self.check_checkpoint()
             self.mainMenu()
             #self.sectors()
-            #print(self.angle)
             
             #print(self.x, self.y)
             
