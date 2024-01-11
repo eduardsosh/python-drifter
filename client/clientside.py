@@ -84,11 +84,9 @@ def send_file_to_server(filepath):
         print(e)
         return
     finally:
-        response = conn.recv(BUFFER_SIZE).decode()
-        if response != DISCONNECT:
-            raise Exception("Server did not respond with DISCONNECT")
         print("closing connection")
-        conn.close()
+        if conn:
+            conn.close()
     
 
 """

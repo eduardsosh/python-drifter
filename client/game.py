@@ -195,11 +195,10 @@ class Game:
         #self.angle = self.angle_between_vectors(self.velocity_x, self.velocity_y, self.orientation)
         #print(self.velocity_x, self.velocity_y, self.orientation)
         # self.drifting_drag = abs(self.angle-90)
-        self.correct_angle = (self.orientation-90)%360
-        self.angle = (math.atan2(self.velocity_y, self.velocity_x)-(self.correct_angle*pidiv180))
-        self.angle = math.degrees(self.angle)
+        # self.correct_angle = (self.orientation-90)%360
+        # self.angle = (math.atan2(self.velocity_y, self.velocity_x)-(self.correct_angle*pidiv180))
+        # self.angle = math.degrees(self.angle)
         #print(math.atan2(self.velocity_y, self.velocity_x), self.correct_angle*pidiv180)
-        print(self.angle)
         #Car has natural drag
         self.velocity_x *= (1-DRAG)
         self.velocity_y *= (1-DRAG)
